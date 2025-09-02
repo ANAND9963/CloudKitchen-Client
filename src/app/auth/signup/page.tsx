@@ -60,7 +60,7 @@ export default function SignupPage() {
             await api.post('/users/signup', userData)
             toast.success('Signup successful! Check your email for verification.')
             // backend exposes GET /api/users/verify-email — we can route users to a local info page later
-            router.push('/auth/verify-email')
+            router.push(`/auth/verify-email?email=${encodeURIComponent(form.email)}`)
         } catch (err: any) {
             toast.error(err?.response?.data?.message || 'Signup failed')
         } finally {
