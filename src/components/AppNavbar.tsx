@@ -25,7 +25,6 @@ export default function AppNavbar() {
         const { data } = await api.get('/users/me')
         if (mounted) setMe(data?.user || data)
       } catch {
-        // not logged in → force to login
         router.replace('/auth/login')
       }
     })()
@@ -33,7 +32,6 @@ export default function AppNavbar() {
   }, [router])
 
   const logout = () => {
-    // standardize your token key if needed
     localStorage.removeItem('ck_token')
     localStorage.removeItem('token')
     router.replace('/auth/login')
@@ -41,11 +39,11 @@ export default function AppNavbar() {
 
   const initials =
     (me?.firstName?.[0] || '') + (me?.lastName?.[0] || me?.email?.[0] || '')
-  
+
   return (
-    <header className="h-14 border-b bg-white/80 backdrop-blur">
+    <header className="h-14 sticky top-0 z-50 border-b bg-white/40 backdrop-blur supports-[backdrop-filter]:bg-white/20">
       <div className="mx-auto max-w-6xl h-full px-4 flex items-center justify-between">
-        <Link href="/" className="inline-flex items-center gap-2">
+        <Link href="/menus" className="inline-flex items-center gap-2">
           <div className="h-8 w-8 rounded-xl bg-indigo-600 text-white font-bold grid place-items-center">CK</div>
           <span className="font-semibold">CloudKitchen</span>
         </Link>
@@ -61,12 +59,14 @@ export default function AppNavbar() {
             className="h-9 w-9 rounded-full bg-neutral-200 text-sm font-semibold grid place-items-center"
             aria-label="Profile"
           >
-            {initials.toUpperCase() || 'U'}
+            {(initials || 'U').toUpperCase()}
           </button>
           {open && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl border bg-white shadow-lg p-2">
+            <div className="absolute right-0 mt-2 z-[60] w-64 rounded-2xl border bg-white shadow-xl p-2">
               <div className="px-3 py-2">
-                <div className="text-sm font-medium">{me?.firstName} {me?.lastName}</div>
+                <div className="text-sm font-medium">
+                  {me?.firstName} {me?.lastName}
+                </div>
                 <div className="text-xs text-neutral-500">{me?.email}</div>
                 <div className="text-xs text-neutral-500 capitalize">Role: {me?.role}</div>
               </div>

@@ -49,43 +49,48 @@ export default function ProfilePage() {
     }
   }
 
-  if (loading) return <div className="p-4">Loading…</div>
+  if (loading) return <div className="p-4 text-white">Loading…</div>
 
   return (
-    <div className="mx-auto max-w-2xl bg-white rounded-xl border shadow-sm p-6">
+    <div className="mx-auto max-w-2xl bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
       <h1 className="text-xl font-semibold mb-4">Personal Information</h1>
       <form onSubmit={save} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* keep inputs bright for readability on glass */}
         <label className="flex flex-col gap-1">
-          <span className="text-sm">First name</span>
+          <span className="text-sm text-white/90">First name</span>
           <input
-            className="border rounded-lg px-3 py-2"
+            className="border rounded-lg px-3 py-2 bg-white/95 text-black"
             value={data.firstName || ''}
             onChange={(e) => setData({ ...data, firstName: e.target.value })}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm">Last name</span>
+          <span className="text-sm text-white/90">Last name</span>
           <input
-            className="border rounded-lg px-3 py-2"
+            className="border rounded-lg px-3 py-2 bg-white/95 text-black"
             value={data.lastName || ''}
             onChange={(e) => setData({ ...data, lastName: e.target.value })}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm">Mobile number</span>
+          <span className="text-sm text-white/90">Mobile number</span>
           <input
-            className="border rounded-lg px-3 py-2"
+            className="border rounded-lg px-3 py-2 bg-white/95 text-black"
             value={data.mobileNumber || ''}
             onChange={(e) => setData({ ...data, mobileNumber: e.target.value })}
           />
         </label>
-        <label className="flex flex-col gap-1 md:col-span-2 opacity-70">
-          <span className="text-sm">Email</span>
-          <input className="border rounded-lg px-3 py-2 bg-neutral-50" value={data.email} disabled />
+        <label className="flex flex-col gap-1 md:col-span-2 opacity-90">
+          <span className="text-sm text-white/90">Email</span>
+          <input
+            className="border rounded-lg px-3 py-2 bg-white/70 text-black"
+            value={data.email}
+            disabled
+          />
         </label>
 
         <div className="md:col-span-2 flex justify-end gap-2">
-          <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white" disabled={saving}>
+          <button type="submit" className="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/25 border border-white/20 text-white" disabled={saving}>
             {saving ? 'Saving…' : 'Save changes'}
           </button>
         </div>

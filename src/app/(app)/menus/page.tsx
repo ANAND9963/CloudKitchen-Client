@@ -80,25 +80,22 @@ export default function MenusPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-white">
         <h1 className="text-2xl font-bold">Menus</h1>
-        <Link
-          href="/owner"
-          className="text-sm text-indigo-600 hover:underline"
-        >
+        <Link href="/owner" className="text-sm underline underline-offset-4">
           Owner Home
         </Link>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <input
-          className="border rounded-lg px-3 py-2 w-64"
+          className="border border-white/20 bg-white/10 text-white placeholder-white/70 rounded-lg px-3 py-2 w-64"
           placeholder="Search by title, category…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <label className="inline-flex items-center gap-2 text-sm">
+        <label className="inline-flex items-center gap-2 text-sm text-white">
           <input
             type="checkbox"
             checked={onlyAvailable}
@@ -109,24 +106,20 @@ export default function MenusPage() {
       </div>
 
       {loading ? (
-        <div className="text-sm text-neutral-600">Loading…</div>
+        <div className="text-sm text-white/80">Loading…</div>
       ) : filtered.length === 0 ? (
-        <div className="text-sm text-neutral-600">No items found.</div>
+        <div className="text-sm text-white/80">No items found.</div>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((it) => (
             <li
               key={it._id}
-              className="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col"
+              className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden flex flex-col text-white"
             >
               {it.imageUrl ? (
-                <img
-                  src={it.imageUrl}
-                  alt={it.title}
-                  className="h-40 w-full object-cover"
-                />
+                <img src={it.imageUrl} alt={it.title} className="h-40 w-full object-cover" />
               ) : (
-                <div className="h-40 w-full bg-neutral-100 grid place-items-center text-neutral-400 text-sm">
+                <div className="h-40 w-full bg-white/10 grid place-items-center text-white/70 text-sm">
                   No image
                 </div>
               )}
@@ -138,12 +131,10 @@ export default function MenusPage() {
                   </div>
                 </div>
                 {it.category && (
-                  <div className="text-xs text-neutral-500 mt-0.5">
-                    {it.category}
-                  </div>
+                  <div className="text-xs text-white/70 mt-0.5">{it.category}</div>
                 )}
                 {it.description && (
-                  <p className="text-sm text-neutral-600 mt-2 line-clamp-3">
+                  <p className="text-sm text-white/80 mt-2 line-clamp-3">
                     {it.description}
                   </p>
                 )}
@@ -151,8 +142,8 @@ export default function MenusPage() {
                   <span
                     className={`px-2 py-0.5 rounded text-xs ${
                       it.isAvailable
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-neutral-200 text-neutral-700'
+                        ? 'bg-emerald-300/20 text-emerald-100 border border-emerald-200/30'
+                        : 'bg-white/10 text-white/80 border border-white/20'
                     }`}
                   >
                     {it.isAvailable ? 'Available' : 'Unavailable'}
@@ -160,7 +151,7 @@ export default function MenusPage() {
                   <button
                     onClick={() => addToCart(it)}
                     disabled={!it.isAvailable}
-                    className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/25 border border-white/20 text-white disabled:opacity-50"
                   >
                     Add to cart
                   </button>
