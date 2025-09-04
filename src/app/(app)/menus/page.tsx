@@ -1,4 +1,4 @@
-// src/app/menus/page.tsx
+// src/app/(app)/menus/page.tsx
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 
+type Role = 'user' | 'admin' | 'owner'
 type MenuItem = {
   _id: string
   title: string
@@ -17,7 +18,6 @@ type MenuItem = {
   isAvailable?: boolean
 }
 
-// Normalize common API shapes into MenuItem[]
 function normalizeMenus(data: any): MenuItem[] {
   const root = data?.menus ?? data?.data ?? data
   if (Array.isArray(root)) return root
@@ -33,6 +33,18 @@ export default function MenusPage() {
   const [loading, setLoading] = useState(true)
   const [q, setQ] = useState('')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
+  const [role, setRole] = useState<Role>('user')
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { data } = await api.get('/users/me')
+        setRole((data?.user || data)?.role ?? 'user')
+      } catch {
+        // not fatal; default 'user'
+      }
+    })()
+  }, [])
 
   const load = async () => {
     try {
@@ -47,9 +59,7 @@ export default function MenusPage() {
     }
   }
 
-  useEffect(() => {
-    load()
-  }, [])
+  useEffect(() => { load() }, [])
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
@@ -83,9 +93,18 @@ export default function MenusPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between text-white">
         <h1 className="text-2xl font-bold">Menus</h1>
-        <Link href="/owner" className="text-sm underline underline-offset-4">
-          Owner Home
-        </Link>
+
+        {/* Context link for staff */}
+        {role === 'owner' && (
+          <Link href="/owner" className="text-sm underline underline-offset-4">
+            Owner Home
+          </Link>
+        )}
+        {role === 'admin' && (
+          <Link href="/admin" className="text-sm underline underline-offset-4">
+            Admin Dashboard
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -134,9 +153,7 @@ export default function MenusPage() {
                   <div className="text-xs text-white/70 mt-0.5">{it.category}</div>
                 )}
                 {it.description && (
-                  <p className="text-sm text-white/80 mt-2 line-clamp-3">
-                    {it.description}
-                  </p>
+                  <p className="text-sm text-white/80 mt-2 line-clamp-3">{it.description}</p>
                 )}
                 <div className="mt-auto pt-3 flex items-center justify-between">
                   <span
@@ -148,13 +165,17 @@ export default function MenusPage() {
                   >
                     {it.isAvailable ? 'Available' : 'Unavailable'}
                   </span>
-                  <button
-                    onClick={() => addToCart(it)}
-                    disabled={!it.isAvailable}
-                    className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/25 border border-white/20 text-white disabled:opacity-50"
-                  >
-                    Add to cart
-                  </button>
+
+                  {/* Only users can add to cart (view-only for admins/owners) */}
+                  {role === 'user' && (
+                    <button
+                      onClick={() => addToCart(it)}
+                      disabled={!it.isAvailable}
+                      className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/25 border border-white/20 text-white disabled:opacity-50"
+                    >
+                      Add to cart
+                    </button>
+                  )}
                 </div>
               </div>
             </li>
