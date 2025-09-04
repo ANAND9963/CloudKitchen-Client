@@ -1,8 +1,6 @@
-// src/components/owner/MenuManager.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useMemo, useState } from 'react'
 import api from '@/utils/api'
 import toast from 'react-hot-toast'
 
@@ -12,8 +10,15 @@ type MenuItem = {
   description?: string
   price: number
   imageUrl?: string
-  category?: string
+  category?: string   // label name
   isAvailable?: boolean
+}
+
+type Category = {
+  _id: string
+  name: string
+  order: number
+  isActive: boolean
 }
 
 const emptyItem: Partial<MenuItem> = {
@@ -25,7 +30,6 @@ const emptyItem: Partial<MenuItem> = {
   imageUrl: '',
 }
 
-// Normalize various possible API shapes into MenuItem[]
 function normalizeMenus(data: any): MenuItem[] {
   const root = data?.menus ?? data?.data ?? data
   if (Array.isArray(root)) return root
@@ -35,26 +39,24 @@ function normalizeMenus(data: any): MenuItem[] {
   return []
 }
 
-/** Portal wrapper so the modal isn't clipped by parent overflow */
-function ModalPortal({ open, children }: { open: boolean; children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  if (!mounted || !open) return null
-  return createPortal(<>{children}</>, document.body)
-}
-
 export default function MenuManager() {
   const [items, setItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
+
+  const [cats, setCats] = useState<Category[]>([])
+  const [catLoading, setCatLoading] = useState(true)
+
   const [openForm, setOpenForm] = useState(false)
   const [editing, setEditing] = useState<MenuItem | null>(null)
   const [form, setForm] = useState<Partial<MenuItem>>(emptyItem)
   const [imgPreview, setImgPreview] = useState<string>('')
 
+  const [filterCat, setFilterCat] = useState<string>('')
+
   const fetchItems = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get('/menus', { params: { limit: 100 } })
+      const { data } = await api.get('/menus', { params: { limit: 200 } })
       const list = normalizeMenus(data)
       setItems(list)
     } catch (e: any) {
@@ -65,26 +67,33 @@ export default function MenuManager() {
     }
   }
 
+  const fetchCats = async () => {
+    try {
+      setCatLoading(true)
+      const { data } = await api.get('/menu-categories')
+      setCats((data?.categories || []).filter((c: Category) => c.isActive))
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Failed to load categories')
+      setCats([])
+    } finally {
+      setCatLoading(false)
+    }
+  }
+
   useEffect(() => {
+    fetchCats()
     fetchItems()
   }, [])
 
-  const onChange = (k: keyof MenuItem, v: any) => {
+  const onChange = (k: keyof MenuItem, v: any) =>
     setForm((s) => ({ ...s, [k]: v }))
-  }
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const okTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
-    if (!okTypes.includes(file.type)) {
-      toast.error('Please choose a PNG/JPG/WEBP image.')
-      return
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image too large (max 2MB).')
-      return
-    }
+    if (!okTypes.includes(file.type)) return toast.error('Use PNG/JPG/WEBP')
+    if (file.size > 2 * 1024 * 1024) return toast.error('Image too large (max 2MB)')
     const reader = new FileReader()
     reader.onload = () => {
       const base64 = String(reader.result || '')
@@ -112,19 +121,15 @@ export default function MenuManager() {
     e.preventDefault()
     const title = String(form.title || '').trim()
     const priceNum = Number(form.price)
-    if (!title || isNaN(priceNum)) {
-      toast.error('Title and price are required.')
-      return
-    }
+    if (!title || isNaN(priceNum)) return toast.error('Title and price required')
     const payload = {
       title,
       description: form.description ?? '',
       price: priceNum,
       imageUrl: form.imageUrl || '',
-      category: form.category ?? '',
+      category: form.category || '',   // ← label name
       isAvailable: !!form.isAvailable,
     }
-
     try {
       if (editing) {
         await api.patch(`/menus/${editing._id}`, payload)
@@ -151,74 +156,94 @@ export default function MenuManager() {
     }
   }
 
-  const list = Array.isArray(items) ? items : []
+  // Inline: quick create a label
+  const [addingLabel, setAddingLabel] = useState(false)
+  const [newLabel, setNewLabel] = useState('')
+  const createLabel = async () => {
+    const name = newLabel.trim()
+    if (!name) return
+    try {
+      const { data } = await api.post('/menu-categories', { name })
+      const cat = data?.category
+      setCats((prev) => [...prev, cat].sort((a,b)=>a.order-b.order))
+      setForm((s) => ({ ...s, category: cat?.name }))
+      setNewLabel('')
+      setAddingLabel(false)
+      toast.success('Label added')
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Could not add label')
+    }
+  }
+
+  const list = useMemo(() => {
+    if (!filterCat) return items
+    return items.filter((it) => (it.category || '') === filterCat)
+  }, [items, filterCat])
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/25 bg-white/15 backdrop-blur-lg text-white shadow-[0_8px_30px_rgba(0,0,0,0.25)]">
-      <div className="p-4 flex items-center justify-between">
+    <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl text-white">
+      <div className="p-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <h2 className="font-semibold">Menus</h2>
-        <button
-          onClick={openNew}
-          className="rounded-lg border border-white/30 bg-white/20 px-3 py-1.5 text-white hover:bg-white/25"
-        >
-          + Add Item
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Category filter */}
+          <select
+            value={filterCat}
+            onChange={(e) => setFilterCat(e.target.value)}
+            className="rounded-lg bg-white text-black px-3 py-1.5"
+          >
+            <option value="">All categories</option>
+            {cats.map((c) => (
+              <option key={c._id} value={c.name}>{c.name}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={openNew}
+            className="rounded-lg bg-white/20 hover:bg-white/25 text-white px-3 py-1.5 border border-white/20"
+          >
+            + Add Item
+          </button>
+        </div>
       </div>
 
       {loading ? (
-        <div className="p-4 text-sm text-white/85">Loading…</div>
+        <div className="p-4 text-sm text-white/80">Loading…</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-white/10 text-white/95">
-              <tr>
-                <th className="px-3 py-2 text-left font-semibold">Title</th>
-                <th className="px-3 py-2 text-left font-semibold">Category</th>
-                <th className="px-3 py-2 text-left font-semibold">Price</th>
-                <th className="px-3 py-2 text-left font-semibold">Available</th>
-                <th className="px-3 py-2" />
+            <thead className="bg-white/10">
+              <tr className="text-white/90">
+                <th className="px-3 py-2 text-left">Title</th>
+                <th className="px-3 py-2 text-left">Category</th>
+                <th className="px-3 py-2 text-left">Price</th>
+                <th className="px-3 py-2 text-left">Available</th>
+                <th className="px-3 py-2"></th>
               </tr>
             </thead>
             <tbody>
               {list.map((it) => (
-                <tr key={it._id} className="border-t border-white/15 hover:bg-white/5 transition-colors">
+                <tr key={it._id} className="border-t border-white/10">
                   <td className="px-3 py-2">
-                    <div className="font-medium text-white">{it.title}</div>
-                    <div className="text-xs text-white/75">{it.description}</div>
+                    <div className="font-medium">{it.title}</div>
+                    <div className="text-xs text-white/70">{it.description}</div>
                   </td>
                   <td className="px-3 py-2 text-white/90">{it.category || '-'}</td>
                   <td className="px-3 py-2 text-white/90">${Number(it.price ?? 0).toFixed(2)}</td>
                   <td className="px-3 py-2">
-                    <span
-                      className={`rounded border px-2 py-0.5 text-xs ${
-                        it.isAvailable
-                          ? 'border-emerald-200/40 bg-emerald-300/20 text-emerald-100'
-                          : 'border-white/30 bg-white/10 text-white/80'
-                      }`}
-                    >
-                      {it.isAvailable ? 'Yes' : 'No'}
-                    </span>
+                    <span className={`px-2 py-0.5 rounded text-xs ${
+                      it.isAvailable ? 'bg-emerald-300/20 text-emerald-100 border border-emerald-200/30' : 'bg-white/10 text-white/80 border border-white/20'
+                    }`}>{it.isAvailable ? 'Yes' : 'No'}</span>
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <button
-                      onClick={() => openEdit(it)}
-                      className="px-2 py-1 text-indigo-50 underline-offset-4 hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => remove(it._id)}
-                      className="ml-2 px-2 py-1 text-rose-200 underline-offset-4 hover:underline"
-                    >
-                      Delete
-                    </button>
+                    <button onClick={() => openEdit(it)} className="px-2 py-1 underline">Edit</button>
+                    <button onClick={() => remove(it._id)} className="ml-2 px-2 py-1 text-rose-200 underline">Delete</button>
                   </td>
                 </tr>
               ))}
               {list.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-6 text-center text-white/85">
-                    No items yet.
+                  <td colSpan={5} className="px-3 py-6 text-center text-white/80">
+                    No items in this category.
                   </td>
                 </tr>
               )}
@@ -227,89 +252,92 @@ export default function MenuManager() {
         </div>
       )}
 
-      {/* ---- Modal in a PORTAL so it's not clipped by this card ---- */}
-      <ModalPortal open={openForm}>
-        <div className="fixed inset-0 z-[55] grid place-items-center">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setOpenForm(false)}
-          />
-          {/* Card */}
-          <div className="relative w-full max-w-sm rounded-2xl border border-neutral-200 bg-white/80 p-5 shadow-xl backdrop-blur">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-semibold text-neutral-800">
-                {editing ? 'Edit Menu Item' : 'Add Menu Item'}
-              </h3>
-              <button
-                onClick={() => setOpenForm(false)}
-                className="text-sm text-neutral-500 hover:text-neutral-700"
-              >
-                Close
-              </button>
+      {/* Modal */}
+      {openForm && (
+        <div className="fixed inset-0 bg-black/50 grid place-items-center z-50">
+          <div className="w-full max-w-lg bg-white/95 rounded-2xl border shadow-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-neutral-900">{editing ? 'Edit item' : 'Add item'}</h3>
+              <button onClick={() => setOpenForm(false)} className="text-sm text-neutral-600">Close</button>
             </div>
 
-            <form onSubmit={save} className="grid grid-cols-1 gap-3">
-              <label className="flex flex-col gap-1 text-sm text-neutral-700">
-                Title
+            <form onSubmit={save} className="grid gap-3">
+              <label className="text-sm text-neutral-700">
+                <div className="mb-1">Title</div>
                 <input
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:ring-2 focus:ring-indigo-400"
                   value={form.title || ''}
                   onChange={(e) => onChange('title', e.target.value)}
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2"
                   required
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm text-neutral-700">
-                Category
+              <label className="text-sm text-neutral-700">
+                <div className="mb-1">Description</div>
                 <input
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:ring-2 focus:ring-indigo-400"
-                  value={form.category || ''}
-                  onChange={(e) => onChange('category', e.target.value)}
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 text-sm text-neutral-700">
-                Price ($)
-                <input
-                  type="number"
-                  step="0.01"
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:ring-2 focus:ring-indigo-400"
-                  value={form.price ?? 0}
-                  onChange={(e) => onChange('price', Number(e.target.value))}
-                  required
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 text-sm text-neutral-700">
-                Description
-                <textarea
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:ring-2 focus:ring-indigo-400"
                   value={form.description || ''}
                   onChange={(e) => onChange('description', e.target.value)}
-                  rows={3}
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2"
                 />
               </label>
 
-              {/* Image upload */}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="flex flex-col gap-1 text-sm text-neutral-700">
-                  Image
+              <div className="grid grid-cols-2 gap-3">
+                <label className="text-sm text-neutral-700">
+                  <div className="mb-1">Price</div>
                   <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp"
-                    onChange={onFileChange}
-                    className="rounded-lg border border-neutral-300 bg-white px-3 py-2"
+                    type="number"
+                    min={0} step="0.01"
+                    value={form.price ?? 0}
+                    onChange={(e) => onChange('price', Number(e.target.value))}
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2"
+                    required
                   />
                 </label>
-                {(imgPreview || form.imageUrl) && (
-                  <div className="flex items-end">
-                    <img
-                      src={imgPreview || (form.imageUrl as string)}
-                      alt="preview"
-                      className="h-20 w-20 rounded-lg border border-neutral-300 object-cover"
-                    />
+
+                {/* Category dropdown + inline add */}
+                <div className="text-sm text-neutral-700">
+                  <div className="mb-1">Category</div>
+                  <div className="flex gap-2">
+                    <select
+                      value={form.category || ''}
+                      onChange={(e) => onChange('category', e.target.value)}
+                      className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2"
+                    >
+                      <option value="">— Select —</option>
+                      {cats.map((c) => (
+                        <option key={c._id} value={c.name}>{c.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setAddingLabel((v) => !v)}
+                      className="rounded-lg border border-neutral-300 bg-white px-3 py-2"
+                    >
+                      + Label
+                    </button>
                   </div>
+                  {addingLabel && (
+                    <div className="mt-2 flex gap-2">
+                      <input
+                        placeholder="New label"
+                        value={newLabel}
+                        onChange={(e) => setNewLabel(e.target.value)}
+                        className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2"
+                      />
+                      <button type="button" onClick={createLabel}
+                        className="rounded-lg bg-indigo-600 text-white px-3 py-2">
+                        Add
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="text-sm text-neutral-700">
+                <div className="mb-1">Image</div>
+                <input type="file" accept="image/*" onChange={onFileChange} />
+                {imgPreview && (
+                  <img src={imgPreview} alt="Preview" className="mt-2 h-24 w-24 object-cover rounded border" />
                 )}
               </div>
 
@@ -322,25 +350,22 @@ export default function MenuManager() {
                 Available
               </label>
 
-              <div className="mt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOpenForm(false)}
-                  className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"
-                >
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={() => setOpenForm(false)} className="rounded-lg border px-3 py-2">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm text-white hover:bg-indigo-700"
-                >
-                  {editing ? 'Save changes' : 'Create'}
+                <button type="submit" className="rounded-lg bg-indigo-600 text-white px-4 py-2">
+                  Save
                 </button>
               </div>
             </form>
+
+            <div className="mt-3 text-xs text-neutral-500">
+              Tip: Manage full list of labels on <a href="/categories" className="underline">Categories</a>.
+            </div>
           </div>
         </div>
-      </ModalPortal>
+      )}
     </div>
   )
 }

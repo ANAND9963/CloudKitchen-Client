@@ -50,7 +50,10 @@ export default function CheckoutPage() {
   const [addingNew, setAddingNew] = useState(false)
   const [savingNew, setSavingNew] = useState(false)
 
-  // constants (server mirrors these today)
+  // placing order
+  const [placing, setPlacing] = useState(false)
+
+  // constants (mirror backend)
   const DELIVERY_FEE_FLAT = 4.99
   const SERVICE_FEE_RATE = 0.05
   const TAX_RATE = 0.08
@@ -72,7 +75,7 @@ export default function CheckoutPage() {
     })()
   }, [])
 
-  // load addresses and select default
+  // load addresses + select default
   const loadAddresses = async () => {
     try {
       setLoadingAddr(true)
@@ -108,7 +111,7 @@ export default function CheckoutPage() {
   const feesAndTax = useMemo(() => subtotal * (SERVICE_FEE_RATE + TAX_RATE), [subtotal])
   const total = useMemo(() => Math.max(0, subtotal + deliveryFee + feesAndTax - DISCOUNT), [subtotal, deliveryFee, feesAndTax])
 
-  // add new address (inline form)
+  // add new address inline
   const handleAddNew = async (data: AddressType) => {
     try {
       setSavingNew(true)
@@ -126,42 +129,45 @@ export default function CheckoutPage() {
     }
   }
 
-  const onContinue = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // PLACE ORDER -> POST /api/checkout
+  const placeOrder = async () => {
     if (lines.length === 0) {
       toast.error('Your cart is empty.')
       return
     }
-    if (method === 'delivery') {
-      if (!selectedId) {
-        toast.error('Please select an address or add a new one.')
-        return
-      }
+    if (method === 'delivery' && !selectedId) {
+      toast.error('Please select an address or add a new one.')
+      return
     }
 
-    // Persist choice for next step (payments/review coming next)
-    localStorage.setItem(
-      'ck_checkout',
-      JSON.stringify({
-        method,
-        addressId: method === 'delivery' ? selectedId : undefined,
-        pricing: {
-          subtotal,
-          deliveryFee,
-          feesAndTax,
-          discount: DISCOUNT,
-          total,
-        },
-      })
-    )
-    toast.success('Saved. Proceeding to payment soon.')
-    // router.push('/checkout/review') // enable when you add the payment step
+    try {
+      setPlacing(true)
+      const body: any = { method }
+      if (method === 'delivery') body.addressId = selectedId
+
+      const { data } = await api.post('/checkout', body)
+      const orderId = data?.order?._id
+      if (!orderId) {
+        toast.success('Order created.')
+        return
+      }
+
+      // Optional: clear any local cache & cart badge will refresh when user opens cart
+      localStorage.removeItem('ck_checkout')
+
+      router.push(`/orders/${orderId}`)
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || 'Checkout failed'
+      toast.error(msg)
+    } finally {
+      setPlacing(false)
+    }
   }
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      {/* LEFT: choices & addresses */}
-      <form onSubmit={onContinue} className="lg:col-span-2 space-y-4">
+      {/* LEFT */}
+      <div className="lg:col-span-2 space-y-4">
         {/* Fulfillment */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
           <h2 className="text-xl font-semibold mb-4">How would you like to get your order?</h2>
@@ -199,7 +205,6 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <>
-                {/* list of saved */}
                 {addresses.length > 0 && (
                   <ul className="space-y-2 mb-4">
                     {addresses.map((a) => (
@@ -234,7 +239,6 @@ export default function CheckoutPage() {
                   </ul>
                 )}
 
-                {/* add new inline */}
                 {addingNew && (
                   <div className="rounded-2xl border border-white/30 bg-white/15 p-4">
                     <h4 className="font-medium mb-2">Add new address</h4>
@@ -249,8 +253,7 @@ export default function CheckoutPage() {
                 )}
 
                 <div className="mt-2 text-xs text-white/75">
-                  Want to manage all addresses?{' '}
-                  <a href="/addresses" className="underline underline-offset-2">Open Address Book</a>
+                  Manage all addresses in <a href="/addresses" className="underline underline-offset-2">Address Book</a>.
                 </div>
               </>
             )}
@@ -270,14 +273,20 @@ export default function CheckoutPage() {
 
         <div className="flex justify-end">
           <button
-            type="submit"
-            disabled={loadingCart || (method === 'delivery' && (loadingAddr || (!selectedId && !addingNew))) || lines.length === 0}
+            type="button"
+            onClick={placeOrder}
+            disabled={
+              placing ||
+              loadingCart ||
+              lines.length === 0 ||
+              (method === 'delivery' && (loadingAddr || (!selectedId && !addingNew)))
+            }
             className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50"
           >
-            Continue
+            {placing ? 'Placing…' : 'Place order'}
           </button>
         </div>
-      </form>
+      </div>
 
       {/* RIGHT: summary */}
       <aside className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white h-max">
