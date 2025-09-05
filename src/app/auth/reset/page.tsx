@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
                 <div className="relative z-10 h-full w-full flex items-center justify-center p-10">
                     <div className="max-w-md text-white">
                         <div className="mb-6 inline-flex items-center gap-3">
-                            <div className="h-11 w-11 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-xl font-bold">CK</div>
+                            <div className="h-11 w-11 rounded-2xl bg-white backdrop-blur-sm flex items-center justify-center text-xl font-bold">CK</div>
                             <span className="text-2xl font-semibold tracking-tight">CloudKitchen</span>
                         </div>
                         <h1 className="text-4xl font-extrabold leading-tight">Enter your code & new password</h1>

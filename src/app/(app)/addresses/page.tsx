@@ -103,25 +103,25 @@ export default function AddressesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-white">
+      <div className="flex items-center justify-between text-neutral-900">
         <h1 className="text-2xl font-bold">My Addresses</h1>
         <button
           onClick={onCreate}
-          className="rounded-lg border border-white/30 bg-white/20 px-3 py-1.5 text-white hover:bg-white/25"
+          className="rounded-lg border border-white/30 bg-white/20 px-3 py-1.5 text-neutral-900 hover:bg-white/25"
         >
           + Add address
         </button>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
+      <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl">
         {loading ? (
-          <div className="p-4 text-white/85 text-sm">Loading…</div>
+          <div className="p-4 text-neutral-900/85 text-sm">Loading…</div>
         ) : list.length === 0 ? (
-          <div className="p-4 text-white/85 text-sm">No addresses yet. Add one to get started.</div>
+          <div className="p-4 text-neutral-900/85 text-sm">No addresses yet. Add one to get started.</div>
         ) : (
           <ul className="divide-y divide-white/10">
             {list.map((a) => (
-              <li key={a._id} className="p-4 text-white/90 flex items-start justify-between gap-4">
+              <li key={a._id} className="p-4 text-neutral-900/90 flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold truncate">{a.label || 'Address'}</span>
@@ -131,10 +131,10 @@ export default function AddressesPage() {
                       </span>
                     )}
                   </div>
-                  <div className="text-sm text-white/80 mt-1">
+                  <div className="text-sm text-neutral-900/80 mt-1">
                     {a.fullName} • {a.phone}
                   </div>
-                  <div className="text-sm text-white/80">
+                  <div className="text-sm text-neutral-900/80">
                     {a.line1}
                     {a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} {a.postalCode}
                   </div>
@@ -143,14 +143,14 @@ export default function AddressesPage() {
                 <div className="flex flex-col items-end gap-2 shrink-0">
                   <button
                     onClick={() => onEdit(a)}
-                    className="text-sm underline underline-offset-4 hover:text-white"
+                    className="text-sm underline underline-offset-4 hover:text-neutral-900"
                   >
                     Edit
                   </button>
                   {!a.isDefault && (
                     <button
                       onClick={() => setDefault(a._id!)}
-                      className="text-sm underline underline-offset-4 hover:text-white"
+                      className="text-sm underline underline-offset-4 hover:text-neutral-900"
                     >
                       Set default
                     </button>

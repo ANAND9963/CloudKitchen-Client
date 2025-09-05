@@ -181,7 +181,7 @@ export default function MenuManager() {
   }, [items, filterCat])
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl text-white">
+    <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl text-white">
       <div className="p-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <h2 className="font-semibold">Menus</h2>
         <div className="flex items-center gap-3">
@@ -199,7 +199,7 @@ export default function MenuManager() {
 
           <button
             onClick={openNew}
-            className="rounded-lg bg-white/20 hover:bg-white/25 text-white px-3 py-1.5 border border-white/20"
+            className="rounded-lg bg-white/20 hover:bg-white/25 text-white px-3 py-1.5 border border-neutral-200"
           >
             + Add Item
           </button>
@@ -207,11 +207,11 @@ export default function MenuManager() {
       </div>
 
       {loading ? (
-        <div className="p-4 text-sm text-white/80">Loading…</div>
+        <div className="p-4 text-sm text-neutral-600">Loading…</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-white/10">
+            <thead className="bg-white">
               <tr className="text-white/90">
                 <th className="px-3 py-2 text-left">Title</th>
                 <th className="px-3 py-2 text-left">Category</th>
@@ -231,7 +231,7 @@ export default function MenuManager() {
                   <td className="px-3 py-2 text-white/90">${Number(it.price ?? 0).toFixed(2)}</td>
                   <td className="px-3 py-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${
-                      it.isAvailable ? 'bg-emerald-300/20 text-emerald-100 border border-emerald-200/30' : 'bg-white/10 text-white/80 border border-white/20'
+                      it.isAvailable ? 'bg-emerald-300/20 text-emerald-100 border border-emerald-200/30' : 'bg-white text-neutral-600 border border-neutral-200'
                     }`}>{it.isAvailable ? 'Yes' : 'No'}</span>
                   </td>
                   <td className="px-3 py-2 text-right">
@@ -242,7 +242,7 @@ export default function MenuManager() {
               ))}
               {list.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-6 text-center text-white/80">
+                  <td colSpan={5} className="px-3 py-6 text-center text-neutral-600">
                     No items in this category.
                   </td>
                 </tr>

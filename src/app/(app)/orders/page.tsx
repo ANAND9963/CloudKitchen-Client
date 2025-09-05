@@ -155,37 +155,37 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-white">
+      <div className="flex items-center justify-between text-neutral-900">
         <h1 className="text-2xl font-bold">Orders</h1>
       </div>
 
       {/* Filters */}
-      <form onSubmit={applyFilters} className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-4">
+      <form onSubmit={applyFilters} className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-4">
         <div className="flex flex-wrap items-end gap-3">
-          <label className="text-white text-sm">
+          <label className="text-neutral-900 text-sm">
             <div className="mb-1 opacity-90">Status</div>
             <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-lg bg-white text-black px-3 py-2">
               <option value="">All</option>
               {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </label>
-          <label className="text-white text-sm">
+          <label className="text-neutral-900 text-sm">
             <div className="mb-1 opacity-90">From</div>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg bg-white text-black px-3 py-2" />
           </label>
-          <label className="text-white text-sm">
+          <label className="text-neutral-900 text-sm">
             <div className="mb-1 opacity-90">To</div>
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg bg-white text-black px-3 py-2" />
           </label>
-          <button type="submit" className="h-10 rounded-lg bg-indigo-600 text-white px-4 font-medium hover:bg-indigo-700">Apply</button>
-          <button type="button" onClick={() => { setStatus(''); setFrom(''); setTo(''); load(true) }} className="h-10 rounded-lg border border-white/30 bg-white/20 text-white px-3 hover:bg-white/25">Reset</button>
+          <button type="submit" className="h-10 rounded-lg bg-indigo-600 text-neutral-900 px-4 font-medium hover:bg-indigo-700">Apply</button>
+          <button type="button" onClick={() => { setStatus(''); setFrom(''); setTo(''); load(true) }} className="h-10 rounded-lg border border-white/30 bg-white/20 text-neutral-900 px-3 hover:bg-white/25">Reset</button>
         </div>
       </form>
 
       {/* Table */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-x-auto">
-        <table className="min-w-full text-sm text-white">
-          <thead className="bg-white/10 text-white/90">
+      <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl overflow-x-auto">
+        <table className="min-w-full text-sm text-neutral-900">
+          <thead className="bg-white text-neutral-900/90">
             <tr>
               <th className="px-3 py-2 text-left">Order</th>
               <th className="px-3 py-2 text-left">Date</th>
@@ -217,7 +217,7 @@ export default function OrdersPage() {
                     <span className={`px-2 py-0.5 rounded text-xs border ${
                       o.status === 'completed' ? 'bg-emerald-300/20 border-emerald-200/30 text-emerald-100'
                       : o.status === 'cancelled' ? 'bg-rose-300/20 border-rose-200/30 text-rose-100'
-                      : 'bg-white/10 border-white/20 text-white/85'
+                      : 'bg-white border-neutral-200 text-neutral-900/85'
                     }`}>
                       {o.status}
                     </span>
@@ -226,7 +226,7 @@ export default function OrdersPage() {
                     <span className={`px-2 py-0.5 rounded text-xs border ${
                       o.paymentStatus === 'paid' ? 'bg-emerald-300/20 border-emerald-200/30 text-emerald-100'
                       : o.paymentStatus === 'failed' ? 'bg-rose-300/20 border-rose-200/30 text-rose-100'
-                      : 'bg-white/10 border-white/20 text-white/85'
+                      : 'bg-white border-neutral-200 text-neutral-900/85'
                     }`}>
                       {o.paymentStatus}
                     </span>
@@ -270,7 +270,7 @@ export default function OrdersPage() {
 
             {!loading && orders.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-3 py-6 text-center text-white/80">
+                <td colSpan={10} className="px-3 py-6 text-center text-neutral-900/80">
                   No orders found.
                 </td>
               </tr>
@@ -279,7 +279,7 @@ export default function OrdersPage() {
         </table>
       </div>
 
-      <div className="flex items-center justify-between text-white/90">
+      <div className="flex items-center justify-between text-neutral-900/90">
         <div className="text-sm">
           Showing <span className="font-medium">{orders.length}</span> of{' '}
           <span className="font-medium">{total}</span>

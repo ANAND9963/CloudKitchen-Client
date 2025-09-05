@@ -107,11 +107,11 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-white">
+      <div className="flex items-center justify-between text-neutral-900">
         <h1 className="text-2xl font-bold">Menu Categories</h1>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-4 text-white">
+      <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-4 text-neutral-900">
         <form onSubmit={add} className="flex flex-wrap items-end gap-3">
           <label className="text-sm">
             <div className="mb-1 opacity-90">Name</div>
@@ -136,19 +136,19 @@ export default function CategoriesPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-neutral-900 hover:bg-indigo-700 disabled:opacity-50"
           >
             {saving ? 'Adding…' : 'Add category'}
           </button>
         </form>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-x-auto">
+      <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl overflow-x-auto">
         {loading ? (
-          <div className="p-4 text-sm text-white/85">Loading…</div>
+          <div className="p-4 text-sm text-neutral-900/85">Loading…</div>
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="bg-white/10 text-white/90">
+            <thead className="bg-white text-neutral-900/90">
               <tr>
                 <th className="px-3 py-2 text-left">Order</th>
                 <th className="px-3 py-2 text-left">Name</th>
@@ -159,18 +159,18 @@ export default function CategoriesPage() {
             </thead>
             <tbody>
               {list.map((c, i) => (
-                <tr key={c._id} className="border-t border-white/10 text-white/90">
+                <tr key={c._id} className="border-t border-white/10 text-neutral-900/90">
                   <td className="px-3 py-2">
                     <div className="flex gap-2">
                       <button
                         onClick={() => move(c, -1)}
-                        className="px-2 py-1 rounded border border-white/30 bg-white/10 hover:bg-white/20"
+                        className="px-2 py-1 rounded border border-white/30 bg-white hover:bg-white/20"
                         disabled={i === 0}
                         type="button"
                       >↑</button>
                       <button
                         onClick={() => move(c, +1)}
-                        className="px-2 py-1 rounded border border-white/30 bg-white/10 hover:bg-white/20"
+                        className="px-2 py-1 rounded border border-white/30 bg-white hover:bg-white/20"
                         disabled={i === list.length - 1}
                         type="button"
                       >↓</button>
@@ -189,7 +189,7 @@ export default function CategoriesPage() {
                       onClick={() => toggleActive(c)}
                       className={`px-2 py-1 rounded border ${c.isActive
                         ? 'bg-emerald-300/20 border-emerald-200/30 text-emerald-100'
-                        : 'bg-white/10 border-white/20 text-white/80'}`}
+                        : 'bg-white border-neutral-200 text-neutral-900/80'}`}
                       type="button"
                     >
                       {c.isActive ? 'Yes' : 'No'}
@@ -207,7 +207,7 @@ export default function CategoriesPage() {
                 </tr>
               ))}
               {list.length === 0 && (
-                <tr><td colSpan={5} className="px-3 py-6 text-center text-white/80">No categories.</td></tr>
+                <tr><td colSpan={5} className="px-3 py-6 text-center text-neutral-900/80">No categories.</td></tr>
               )}
             </tbody>
           </table>

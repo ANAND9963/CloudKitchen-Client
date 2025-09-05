@@ -52,7 +52,7 @@ export default function ProfilePage() {
   if (loading) return <div className="p-4 text-white">Loading…</div>
 
   return (
-    <div className="mx-auto max-w-2xl bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+    <div className="mx-auto max-w-2xl bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-white">
       <h1 className="text-xl font-semibold mb-4">Personal Information</h1>
       <form onSubmit={save} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* keep inputs bright for readability on glass */}
@@ -90,7 +90,7 @@ export default function ProfilePage() {
         </label>
 
         <div className="md:col-span-2 flex justify-end gap-2">
-          <button type="submit" className="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/25 border border-white/20 text-white" disabled={saving}>
+          <button type="submit" className="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/25 border border-neutral-200 text-white" disabled={saving}>
             {saving ? 'Saving…' : 'Save changes'}
           </button>
         </div>

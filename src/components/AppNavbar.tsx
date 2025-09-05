@@ -15,6 +15,7 @@ type Me = {
   role: Role
 }
 
+
 export default function AppNavbar() {
   const router = useRouter()
   const [me, setMe] = useState<Me | null>(null)

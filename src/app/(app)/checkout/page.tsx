@@ -169,14 +169,14 @@ export default function CheckoutPage() {
       {/* LEFT */}
       <div className="lg:col-span-2 space-y-4">
         {/* Fulfillment */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+        <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-neutral-900">
           <h2 className="text-xl font-semibold mb-4">How would you like to get your order?</h2>
           <div className="flex flex-col sm:flex-row gap-3">
-            <label className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer ${method === 'delivery' ? 'bg-white/20 border-white/40' : 'bg-white/10 border-white/20'}`}>
+            <label className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer ${method === 'delivery' ? 'bg-white/20 border-white/40' : 'bg-white border-neutral-200'}`}>
               <input type="radio" name="method" value="delivery" checked={method === 'delivery'} onChange={() => setMethod('delivery')} />
               Delivery to address
             </label>
-            <label className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer ${method === 'pickup' ? 'bg-white/20 border-white/40' : 'bg-white/10 border-white/20'}`}>
+            <label className={`flex items-center gap-2 rounded-xl border px-4 py-3 cursor-pointer ${method === 'pickup' ? 'bg-white/20 border-white/40' : 'bg-white border-neutral-200'}`}>
               <input type="radio" name="method" value="pickup" checked={method === 'pickup'} onChange={() => setMethod('pickup')} />
               Pickup at location
             </label>
@@ -185,22 +185,22 @@ export default function CheckoutPage() {
 
         {/* Address section */}
         {method === 'delivery' ? (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+          <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-neutral-900">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="font-semibold">Saved addresses</h3>
               <button
                 type="button"
                 onClick={() => setAddingNew((v) => !v)}
-                className="rounded-lg border border-white/30 bg-white/20 px-3 py-1.5 text-white hover:bg-white/25"
+                className="rounded-lg border border-white/30 bg-white/20 px-3 py-1.5 text-neutral-900 hover:bg-white/25"
               >
                 {addingNew ? 'Close' : '+ Add new'}
               </button>
             </div>
 
             {loadingAddr ? (
-              <div className="text-sm text-white/85">Loading…</div>
+              <div className="text-sm text-neutral-900/85">Loading…</div>
             ) : addresses.length === 0 && !addingNew ? (
-              <div className="text-sm text-white/85">
+              <div className="text-sm text-neutral-900/85">
                 No addresses yet. Click <span className="underline">Add new</span> to create one.
               </div>
             ) : (
@@ -208,7 +208,7 @@ export default function CheckoutPage() {
                 {addresses.length > 0 && (
                   <ul className="space-y-2 mb-4">
                     {addresses.map((a) => (
-                      <li key={a._id} className={`rounded-xl border p-3 bg-white/10 ${selectedId === a._id ? 'border-white/60' : 'border-white/25'}`}>
+                      <li key={a._id} className={`rounded-xl border p-3 bg-white ${selectedId === a._id ? 'border-white/60' : 'border-neutral-200'}`}>
                         <label className="flex items-start gap-3 cursor-pointer">
                           <input
                             type="radio"
@@ -225,10 +225,10 @@ export default function CheckoutPage() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-white/80">
+                            <div className="text-sm text-neutral-900/80">
                               {a.fullName} • {a.phone}
                             </div>
-                            <div className="text-sm text-white/80 truncate">
+                            <div className="text-sm text-neutral-900/80 truncate">
                               {a.line1}
                               {a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} {a.postalCode}
                             </div>
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
                 )}
 
                 {addingNew && (
-                  <div className="rounded-2xl border border-white/30 bg-white/15 p-4">
+                  <div className="rounded-2xl border border-white/30 bg-white p-4">
                     <h4 className="font-medium mb-2">Add new address</h4>
                     <AddressForm
                       initial={{ label: 'Home' }}
@@ -252,20 +252,20 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                <div className="mt-2 text-xs text-white/75">
+                <div className="mt-2 text-xs text-neutral-900/75">
                   Manage all addresses in <a href="/addresses" className="underline underline-offset-2">Address Book</a>.
                 </div>
               </>
             )}
           </div>
         ) : (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+          <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-neutral-900">
             <h3 className="font-semibold mb-2">Pickup location</h3>
-            <p className="text-white/85">
+            <p className="text-neutral-900/85">
               CloudKitchen – Main Kitchen<br />
               123 Kitchen Street, Your City 000000
             </p>
-            <p className="text-sm text-white/75 mt-2">
+            <p className="text-sm text-neutral-900/75 mt-2">
               You’ll receive a ready time after we confirm your order. No delivery fee for pickup.
             </p>
           </div>
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
               lines.length === 0 ||
               (method === 'delivery' && (loadingAddr || (!selectedId && !addingNew)))
             }
-            className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50"
+            className="px-5 py-2 rounded-lg bg-indigo-600 text-neutral-900 font-semibold hover:bg-indigo-700 disabled:opacity-50"
           >
             {placing ? 'Placing…' : 'Place order'}
           </button>
@@ -289,13 +289,13 @@ export default function CheckoutPage() {
       </div>
 
       {/* RIGHT: summary */}
-      <aside className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white h-max">
+      <aside className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-neutral-900 h-max">
         <h3 className="font-semibold mb-3">Summary</h3>
 
         {loadingCart ? (
-          <div className="text-sm text-white/85">Loading…</div>
+          <div className="text-sm text-neutral-900/85">Loading…</div>
         ) : lines.length === 0 ? (
-          <div className="text-sm text-white/85">Your cart is empty.</div>
+          <div className="text-sm text-neutral-900/85">Your cart is empty.</div>
         ) : (
           <>
             <ul className="space-y-3 mb-4">
@@ -303,7 +303,7 @@ export default function CheckoutPage() {
                 <li key={l.menuItemId} className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="font-medium truncate">{l.title}</div>
-                    <div className="text-xs text-white/80">Qty {l.qty}</div>
+                    <div className="text-xs text-neutral-900/80">Qty {l.qty}</div>
                   </div>
                   <div className="text-sm font-medium">${(l.price * l.qty).toFixed(2)}</div>
                 </li>

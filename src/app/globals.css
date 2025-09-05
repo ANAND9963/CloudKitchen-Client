@@ -4,4 +4,80 @@
 @tailwind utilities;
 
 /* utility for buttons used above */
-.btn { @apply inline-flex items-center justify-center rounded-lg bg-neutral-900 text-white px-3 py-2 hover:bg-black/80; }
+.btn { @apply inline-flex items-center justify-center rounded-lg bg-neutral-900 text-neutral-900 px-3 py-2 hover:bg-black/80; }
+
+
+/* === CloudKitchen: light theme rescue for authed pages === */
+.ck-app {
+  --ck-text: 17 24 39;         /* neutral-900 */
+  --ck-muted: 75 85 99;        /* neutral-600 */
+  --ck-border: 229 231 235;    /* neutral-200 */
+  --ck-input-border: 209 213 219; /* neutral-300 */
+}
+
+/* Make base text readable */
+.ck-app :is(h1,h2,h3,h4,h5,h6,p,span,div,li,small,strong,em,code,label,th,td) {
+  color: rgb(var(--ck-text)) !important;
+}
+
+/* Convert old glass/white-text utilities to light theme */
+.ck-app .text-white { color: rgb(var(--ck-text)) !important; }
+.ck-app .text-white\/90 { color: rgb(var(--ck-text)) !important; }
+.ck-app .text-white\/85 { color: rgb(var(--ck-muted)) !important; }
+.ck-app .text-white\/80 { color: rgb(var(--ck-muted)) !important; }
+.ck-app .text-white\/70 { color: rgb(var(--ck-muted)) !important; }
+
+.ck-app .bg-white\/10,
+.ck-app .bg-white\/15,
+.ck-app .bg-white\/20,
+.ck-app .bg-white\/25,
+.ck-app .bg-white\/30 { background-color: #fff !important; }
+
+.ck-app .border-white\/20,
+.ck-app .border-white\/25,
+.ck-app .border-white\/30 { border-color: rgb(var(--ck-border)) !important; }
+
+.ck-app .backdrop-blur, 
+.ck-app .backdrop-blur-sm,
+.ck-app .backdrop-blur-md,
+.ck-app .backdrop-blur-lg { backdrop-filter: none !important; }
+
+/* Inputs & selects readable everywhere */
+.ck-app input,
+.ck-app select,
+.ck-app textarea {
+  background-color: #fff !important;
+  color: rgb(var(--ck-text)) !important;
+  border: 1px solid rgb(var(--ck-input-border)) !important;
+}
+
+/* Tables */
+.ck-app table thead tr { background-color: #fff !important; }
+.ck-app table th { color: rgb(var(--ck-muted)) !important; border-color: rgb(var(--ck-border)) !important; }
+.ck-app table td { border-color: rgb(var(--ck-border)) !important; }
+
+/* Modals, cards, surfaces */
+.ck-app .modal,
+.ck-app .card,
+.ck-app .surface {
+  background-color: #fff !important;
+  color: rgb(var(--ck-text)) !important;
+  border: 1px solid rgb(var(--ck-border)) !important;
+}
+
+/* Badges from Yes/No pills */
+.ck-app .badge-yes { 
+  background-color: #ecfdf5 !important; 
+  color: #065f46 !important; 
+  border: 1px solid #a7f3d0 !important; 
+}
+.ck-app .badge-no { 
+  background-color: #f8fafc !important; 
+  color: #334155 !important; 
+  border: 1px solid #e5e7eb !important; 
+}
+
+/* Links */
+.ck-app a { color: rgb(79 70 229); }       /* indigo-600 */
+.ck-app a:hover { color: rgb(67 56 202); } /* indigo-700 */
+

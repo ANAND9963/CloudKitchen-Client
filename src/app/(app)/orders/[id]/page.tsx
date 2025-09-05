@@ -89,7 +89,7 @@ export default function OrderDetailPage() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-4">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+        <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-white">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold">Order #{order._id.slice(-6)}</h1>
             <div className="text-sm space-x-2">
@@ -98,7 +98,7 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          <div className="text-sm text-white/80 mt-1">Placed: {dtf.format(new Date(order.createdAt))}</div>
+          <div className="text-sm text-neutral-600 mt-1">Placed: {dtf.format(new Date(order.createdAt))}</div>
 
           {/* User cancel button when allowed */}
           {canCancel(order.status) && (
@@ -132,7 +132,7 @@ export default function OrderDetailPage() {
         </div>
 
         {order.method === 'delivery' ? (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+          <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-white">
             <h3 className="font-semibold mb-2">Delivery address</h3>
             <div className="text-white/85 text-sm">
               {order.address?.label ? <div>{order.address.label}</div> : null}
@@ -145,7 +145,7 @@ export default function OrderDetailPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white">
+          <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-white">
             <h3 className="font-semibold mb-2">Pickup</h3>
             <div className="text-white/85 text-sm">
               CloudKitchen – Main Kitchen, 123 Kitchen Street, Your City 000000
@@ -154,7 +154,7 @@ export default function OrderDetailPage() {
         )}
       </div>
 
-      <aside className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 text-white h-max">
+      <aside className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl p-6 text-white h-max">
         <h3 className="font-semibold mb-3">Summary</h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between"><span>Subtotal</span><span>${order.subtotal.toFixed(2)}</span></div>

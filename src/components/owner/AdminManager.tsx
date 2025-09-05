@@ -57,23 +57,23 @@ export default function AdminManager() {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl text-white">
+    <div className="bg-white backdrop-blur-md rounded-2xl border border-neutral-200 shadow-xl text-white">
       <div className="p-4 flex items-center justify-between">
         <h2 className="font-semibold">Admins</h2>
         <input
           placeholder="Search by name or email…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="border border-white/20 bg-white/10 text-white placeholder-white/70 rounded-lg px-3 py-1.5 w-72"
+          className="border border-neutral-200 bg-white text-white placeholder-white/70 rounded-lg px-3 py-1.5 w-72"
         />
       </div>
 
       {loading ? (
-        <div className="p-4 text-sm text-white/80">Loading…</div>
+        <div className="p-4 text-sm text-neutral-600">Loading…</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-white/10">
+            <thead className="bg-white">
               <tr className="text-white/90">
                 <th className="px-3 py-2 text-left">User</th>
                 <th className="px-3 py-2 text-left">Email</th>
@@ -103,7 +103,7 @@ export default function AdminManager() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={4} className="px-3 py-6 text-center text-white/80">No users</td></tr>
+                <tr><td colSpan={4} className="px-3 py-6 text-center text-neutral-600">No users</td></tr>
               )}
             </tbody>
           </table>
