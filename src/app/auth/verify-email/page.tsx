@@ -1,4 +1,3 @@
-// src/app/auth/verify-email/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -14,19 +13,18 @@ const BACKEND =
 export default function VerifyEmailPage() {
   const search = useSearchParams()
   const token = search.get('token')
-  const email = search.get('email') || ''
+  const email = search.get('email') ?? ''
 
   const [state, setState] = useState<VerifyState>('verifying')
   const [sending, setSending] = useState(false)
   const [message, setMessage] = useState<string>('')
 
-  // 🚀 Bounce to backend so it can 302 -> /auth/login?verified=...
+  // Redirect to backend (email verification endpoint)
   useEffect(() => {
     if (!token || !email) {
       setState('no-token')
       return
     }
-    // Hard redirect (do NOT use fetch/axios here)
     window.location.href = `${BACKEND}/api/users/verify-email?token=${encodeURIComponent(
       token
     )}&email=${encodeURIComponent(email)}`
@@ -38,8 +36,11 @@ export default function VerifyEmailPage() {
       setSending(true)
       await api.post('/users/resend-verification-public', { email })
       setMessage('Verification email resent. Check your inbox.')
-    } catch (err: any) {
-      setMessage(err?.response?.data?.message || 'Failed to resend verification email.')
+    } catch (err) {
+      const errorMessage =
+        (err as any)?.response?.data?.message ??
+        'Failed to resend verification email.'
+      setMessage(errorMessage)
     } finally {
       setSending(false)
     }
@@ -47,19 +48,29 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="min-h-dvh grid grid-cols-1 md:grid-cols-2">
-      {/* Left brand panel */}
+      {/* Left: brand panel */}
       <div className="relative hidden md:block">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/bg.jpg')" }} />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/bg.jpg')" }}
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-700/70 via-purple-700/60 to-pink-600/60" />
         <div className="relative z-10 h-full w-full flex items-center justify-center p-10">
           <div className="max-w-md text-white">
             <div className="mb-6 inline-flex items-center gap-3">
-              <div className="h-11 w-11 rounded-2xl bg-white backdrop-blur-sm flex items-center justify-center text-xl font-bold">CK</div>
-              <span className="text-2xl font-semibold tracking-tight">CloudKitchen</span>
+              <div className="h-11 w-11 rounded-2xl bg-white backdrop-blur-sm flex items-center justify-center text-xl font-bold">
+                CK
+              </div>
+              <span className="text-2xl font-semibold tracking-tight">
+                CloudKitchen
+              </span>
             </div>
-            <h1 className="text-4xl font-extrabold leading-tight">Verify your email</h1>
+            <h1 className="text-4xl font-extrabold leading-tight">
+              Verify your email
+            </h1>
             <p className="mt-4 text-white/85">
-              We sent a verification link to your inbox. Click it to activate your account.
+              We sent a verification link to your inbox. Click it to activate
+              your account.
             </p>
           </div>
         </div>
@@ -71,14 +82,20 @@ export default function VerifyEmailPage() {
           {state === 'verifying' && (
             <>
               <h2 className="text-2xl font-bold tracking-tight">Verifying…</h2>
-              <p className="text-neutral-600">Please wait while we confirm your email.</p>
+              <p className="text-neutral-600">
+                Please wait while we confirm your email.
+              </p>
             </>
           )}
 
           {state === 'no-token' && (
             <>
-              <h2 className="text-2xl font-bold tracking-tight">Check your inbox</h2>
-              <p className="text-neutral-600">Open the verification email on this device to finish.</p>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Check your inbox
+              </h2>
+              <p className="text-neutral-600">
+                Open the verification email on this device to finish.
+              </p>
               {email && (
                 <button
                   onClick={resend}
@@ -88,9 +105,14 @@ export default function VerifyEmailPage() {
                   {sending ? 'Resending…' : 'Resend verification email'}
                 </button>
               )}
-              {message && <p className="text-sm text-neutral-700 pt-2">{message}</p>}
+              {message && (
+                <p className="text-sm text-neutral-700 pt-2">{message}</p>
+              )}
               <div className="pt-2">
-                <Link href="/auth/login" className="text-indigo-600 font-medium hover:underline">
+                <Link
+                  href="/auth/login"
+                  className="text-indigo-600 font-medium hover:underline"
+                >
                   Back to login
                 </Link>
               </div>
