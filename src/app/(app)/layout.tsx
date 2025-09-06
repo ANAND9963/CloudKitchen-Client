@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 
 import AppNavbar from "@/components/AppNavbar"
 

@@ -1,5 +1,6 @@
 // src/app/auth/reset/page.tsx
-'use client'
+"use client";
+
 
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'

@@ -1,5 +1,6 @@
 // src/app/auth/forgot/page.tsx
-'use client'
+"use client";
+
 
 import { useState } from 'react'
 import api from '@/utils/api'

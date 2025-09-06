@@ -1,5 +1,5 @@
 // src/app/auth/login/page.tsx
-'use client'
+"use client";
 
 import { useState, useEffect } from 'react'
 import api from '@/utils/api'

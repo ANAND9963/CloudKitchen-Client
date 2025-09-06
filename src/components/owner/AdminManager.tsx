@@ -1,5 +1,6 @@
 // src/components/owner/AdminManager.tsx
-'use client'
+"use client";
+
 
 import { useEffect, useMemo, useState } from 'react'
 import api from '@/utils/api'

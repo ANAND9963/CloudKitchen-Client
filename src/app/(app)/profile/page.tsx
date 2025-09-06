@@ -1,5 +1,6 @@
 // src/app/profile/page.tsx
-'use client'
+"use client";
+
 
 import { useEffect, useState } from 'react'
 import api from '@/utils/api'
