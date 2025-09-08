@@ -11,3 +11,5 @@ export default async function Page({ searchParams }: { searchParams: SP }) {
   const email = typeof emailParam === 'string' ? emailParam : ''
   return <ResetClient initialEmail={email} />
 }
+
+//
