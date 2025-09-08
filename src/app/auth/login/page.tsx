@@ -3,12 +3,15 @@ import LoginClient from './LoginClient'
 
 export const dynamic = 'force-dynamic'
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { verified?: string; email?: string }
-}) {
-  const verified = typeof searchParams?.verified === 'string' ? searchParams.verified : undefined
-  const email = typeof searchParams?.email === 'string' ? searchParams.email : ''
+type SP = Promise<{ verified?: string | string[]; email?: string | string[] }>
+
+export default async function Page({ searchParams }: { searchParams: SP }) {
+  const sp = await searchParams
+  const verifiedParam = Array.isArray(sp.verified) ? sp.verified[0] : sp.verified
+  const emailParam = Array.isArray(sp.email) ? sp.email[0] : sp.email
+
+  const verified = typeof verifiedParam === 'string' ? verifiedParam : undefined
+  const email = typeof emailParam === 'string' ? emailParam : ''
+
   return <LoginClient initialVerified={verified} initialEmail={email} />
 }

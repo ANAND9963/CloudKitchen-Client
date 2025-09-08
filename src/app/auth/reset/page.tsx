@@ -3,11 +3,11 @@ import ResetClient from './ResetClient'
 
 export const dynamic = 'force-dynamic'
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { email?: string }
-}) {
-  const email = typeof searchParams?.email === 'string' ? searchParams.email : ''
+type SP = Promise<{ email?: string | string[] }>
+
+export default async function Page({ searchParams }: { searchParams: SP }) {
+  const sp = await searchParams
+  const emailParam = Array.isArray(sp.email) ? sp.email[0] : sp.email
+  const email = typeof emailParam === 'string' ? emailParam : ''
   return <ResetClient initialEmail={email} />
 }
